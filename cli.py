@@ -70,8 +70,16 @@ class GhostDB:
         if not self.transactions:
             print("NO TRANSACTION")
             return
-        self.transactions.clear()
-        self._debug_print("COMMIT")
+
+        current = self.transactions.pop()
+        if self.transactions:
+            parent = self.transactions[-1]
+            for key, old_value in current.items():
+                if key not in parent:
+                    parent[key] = old_value
+            self._debug_print("COMMIT (merged with parent)")
+        else:
+            self._debug_print("COMMIT (top level, applied)")
 
     def process(self, line):
         parts = line.strip().split()

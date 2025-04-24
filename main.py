@@ -10,7 +10,7 @@ class GhostDB:
 
     def _set(self, key, value):
         old_value = self.db.get(key)
-        if old_value:
+        if old_value is not None:
             self.value_counts[old_value] -= 1
         self.db[key] = value
         self.value_counts[value] += 1
@@ -61,7 +61,12 @@ class GhostDB:
         if not self.transactions:
             print("NO TRANSACTION")
             return
-        self.transactions.clear()
+        current = self.transactions.pop()
+        if self.transactions:
+            previous = self.transactions[-1]
+            for key, old_value in current.items():
+                if key not in previous:
+                    previous[key] = old_value
 
     def process(self, line):
         parts = line.strip().split()
