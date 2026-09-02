@@ -28,7 +28,7 @@
   <circle cx="90" cy="430" r="220" fill="#22C7A0" opacity=".08"/>
 
   <text x="56" y="58" fill="#F6F5FF" font-family="Inter,Segoe UI,sans-serif" font-size="24" font-weight="700">GhostDB · command → state → transaction</text>
-  <text x="56" y="87" fill="#A9A6C8" font-family="Inter,Segoe UI,sans-serif" font-size="15">Каждая команда видна, а каждое изменение можно подтвердить или откатить.</text>
+  <text x="56" y="87" fill="#A9A6C8" font-family="Inter,Segoe UI,sans-serif" font-size="15">Every command is visible, and every change can be committed or rolled back.</text>
 
   <g transform="translate(58 132)">
     <rect width="260" height="186" rx="20" fill="#151B32" stroke="#343B68"/>

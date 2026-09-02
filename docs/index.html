@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="GhostDB — интерактивная документация и playground для in-memory базы данных на Python.">
+  <meta name="description" content="GhostDB — interactive documentation and a playground for a Python in-memory database.">
   <title>GhostDB · Interactive docs</title>
   <style>
     :root {
@@ -489,10 +489,10 @@
         <span class="brand-mark">G</span>
         <span>GhostDB <span style="color: var(--subtle);">/ docs</span></span>
       </a>
-      <nav aria-label="Основная навигация">
+      <nav aria-label="Primary navigation">
         <a href="#playground">Playground</a>
-        <a href="#commands">Команды</a>
-        <a href="#architecture">Архитектура</a>
+        <a href="#commands">Commands</a>
+        <a href="#architecture">Architecture</a>
         <a class="github-link" href="https://github.com/GLec1er/GhostDB">GitHub ↗</a>
       </nav>
     </header>
@@ -505,19 +505,19 @@
             <span>Python · zero dependencies</span>
           </div>
           <h1>Database you can <span>touch.</span></h1>
-          <p class="hero-copy">GhostDB превращает транзакции в понятный эксперимент: вводи команды, меняй состояние памяти и наблюдай, что именно делает <code>COMMIT</code> или <code>ROLLBACK</code>.</p>
+          <p class="hero-copy">GhostDB turns transactions into a hands-on experiment: enter commands, change memory state, and watch exactly what <code>COMMIT</code> or <code>ROLLBACK</code> does.</p>
           <div class="actions">
-            <a class="button" href="#playground">Запустить Playground <span aria-hidden="true">↓</span></a>
-            <a class="button button-secondary" href="../README.md">Читать README <span aria-hidden="true">↗</span></a>
+            <a class="button" href="#playground">Launch Playground <span aria-hidden="true">↓</span></a>
+            <a class="button button-secondary" href="../README.md">Read README <span aria-hidden="true">↗</span></a>
           </div>
-          <div class="metric-row" aria-label="Ключевые свойства">
-            <div class="metric"><strong>0 files</strong><span>только RAM</span></div>
-            <div class="metric"><strong>∞ layers</strong><span>вложенные транзакции</span></div>
-            <div class="metric"><strong>9 cmds</strong><span>маленький API</span></div>
+          <div class="metric-row" aria-label="Key properties">
+            <div class="metric"><strong>0 files</strong><span>RAM only</span></div>
+            <div class="metric"><strong>∞ layers</strong><span>nested transactions</span></div>
+            <div class="metric"><strong>9 cmds</strong><span>small API</span></div>
           </div>
         </div>
 
-        <div class="hero-visual" aria-label="Схема GhostDB">
+        <div class="hero-visual" aria-label="GhostDB diagram">
           <div class="visual-head"><span>ghostdb / runtime</span><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
           <div class="visual-canvas">
             <div class="orbit"></div>
@@ -534,9 +534,9 @@
         <div class="section-heading">
           <div>
             <div class="eyebrow" style="margin-bottom: 10px;">01 · interactive lab</div>
-            <h2>Потрогай состояние</h2>
+            <h2>Explore the state</h2>
           </div>
-          <p>Это браузерное зеркало команд из `cli.py`: консоль, память, счётчики и стек обновляются одновременно.</p>
+          <p>This browser-based mirror of `cli.py` keeps the console, memory, counters, and transaction stack in sync.</p>
         </div>
 
         <div class="playground-grid">
@@ -545,13 +545,13 @@
               <div class="card-title">GhostDB Playground</div>
               <span class="card-label">client-side emulator</span>
             </div>
-            <div class="terminal-output" id="terminalOutput" role="log" aria-live="polite" aria-label="Вывод Playground"></div>
+            <div class="terminal-output" id="terminalOutput" role="log" aria-live="polite" aria-label="Playground output"></div>
             <form class="command-form" id="commandForm">
               <span class="prompt" aria-hidden="true">ghostdb&gt;</span>
-              <input class="command-input" id="commandInput" autocomplete="off" spellcheck="false" aria-label="Команда GhostDB" placeholder="например: BEGIN">
-              <button class="run-button" type="submit" aria-label="Выполнить команду">↵</button>
+              <input class="command-input" id="commandInput" autocomplete="off" spellcheck="false" aria-label="GhostDB command" placeholder="e.g. BEGIN">
+              <button class="run-button" type="submit" aria-label="Run command">↵</button>
             </form>
-            <div class="quick-bar" aria-label="Быстрые команды">
+            <div class="quick-bar" aria-label="Quick commands">
               <button class="quick-command" type="button" data-command="SET A 10">SET A 10</button>
               <button class="quick-command" type="button" data-command="BEGIN">BEGIN</button>
               <button class="quick-command" type="button" data-command="SET A 20">SET A 20</button>
@@ -560,7 +560,7 @@
             </div>
           </div>
 
-          <aside class="card state-card" aria-label="Текущее состояние базы">
+          <aside class="card state-card" aria-label="Current database state">
             <div class="card-bar">
               <div class="card-title">Live state</div>
               <span class="card-label" id="lastAction">ready</span>
@@ -594,15 +594,15 @@
         <div class="section-heading">
           <div>
             <div class="eyebrow" style="margin-bottom: 10px;">02 · small surface area</div>
-            <h2>Команды без шума</h2>
+            <h2>Commands without noise</h2>
           </div>
-          <p>Одна команда — одна идея. Можно читать реализацию и сразу проверять её поведение в лаборатории выше.</p>
+          <p>One command, one idea. Read the implementation and test its behavior in the lab above.</p>
         </div>
         <div class="feature-grid">
-          <article class="feature-card"><div class="feature-icon">KV</div><h3>SET / GET</h3><p>Положи значение в RAM и получи его по ключу. Отсутствующий ключ возвращает <code>NULL</code>.</p></article>
-          <article class="feature-card"><div class="feature-icon">∑</div><h3>FIND / COUNTS</h3><p>Найди все ключи со значением или посчитай, сколько раз оно встречается.</p></article>
-          <article class="feature-card"><div class="feature-icon">↶</div><h3>ROLLBACK</h3><p>Верни активный слой к snapshot-состоянию, не затрагивая родительскую транзакцию.</p></article>
-          <article class="feature-card"><div class="feature-icon">↗</div><h3>COMMIT</h3><p>Подтверди слой или передай его исходные значения на уровень выше.</p></article>
+          <article class="feature-card"><div class="feature-icon">KV</div><h3>SET / GET</h3><p>Put a value in RAM and retrieve it by key. A missing key returns <code>NULL</code>.</p></article>
+          <article class="feature-card"><div class="feature-icon">∑</div><h3>FIND / COUNTS</h3><p>Find every key with a value or count how many times that value appears.</p></article>
+          <article class="feature-card"><div class="feature-icon">↶</div><h3>ROLLBACK</h3><p>Return the active layer to its snapshot without touching the parent transaction.</p></article>
+          <article class="feature-card"><div class="feature-icon">↗</div><h3>COMMIT</h3><p>Confirm a layer or pass its original values up to the parent layer.</p></article>
         </div>
       </section>
 
@@ -610,15 +610,15 @@
         <div class="architecture">
           <div class="architecture-copy">
             <div class="eyebrow" style="margin-bottom: 10px;">03 · under the hood</div>
-            <h2>Снимок при первом изменении</h2>
-            <p>Когда транзакция меняет ключ впервые, GhostDB сохраняет его прежнее значение в текущем слое. Дальше <code>ROLLBACK</code> восстанавливает снимок, а <code>COMMIT</code> переносит историю во внешний слой.</p>
+            <h2>Snapshot on first change</h2>
+            <p>When a transaction changes a key for the first time, GhostDB saves its previous value in the current layer. Then <code>ROLLBACK</code> restores the snapshot, while <code>COMMIT</code> moves the history to the outer layer.</p>
             <div class="steps">
-              <div class="step"><span class="step-number">01</span><div><strong>BEGIN</strong><span>Добавляет новый пустой слой.</span></div></div>
-              <div class="step"><span class="step-number">02</span><div><strong>SET / UNSET</strong><span>Сохраняет старое значение ключа один раз.</span></div></div>
-              <div class="step"><span class="step-number">03</span><div><strong>COMMIT / ROLLBACK</strong><span>Применяет изменения или собирает состояние назад.</span></div></div>
+              <div class="step"><span class="step-number">01</span><div><strong>BEGIN</strong><span>Adds a new empty layer.</span></div></div>
+              <div class="step"><span class="step-number">02</span><div><strong>SET / UNSET</strong><span>Saves a key's old value once.</span></div></div>
+              <div class="step"><span class="step-number">03</span><div><strong>COMMIT / ROLLBACK</strong><span>Applies changes or rebuilds the previous state.</span></div></div>
             </div>
           </div>
-          <div class="code-map" aria-label="Фрагмент модели транзакций">
+          <div class="code-map" aria-label="Transaction model excerpt">
             <div class="code-line"><span class="line-no">01</span><span><span class="syntax-violet">transactions</span> = []</span></div>
             <div class="code-line"><span class="line-no">02</span><span><span class="syntax-violet">BEGIN</span> → <span class="syntax-mint">T1</span></span></div>
             <div class="code-line"><span class="line-no">03</span><span><span class="syntax-violet">SET</span> A 10</span></div>
@@ -760,7 +760,7 @@
         if (cmd === "END" && parts.length === 1) {
           return result("SESSION READY · browser lab stays open", "info");
         }
-        return result("INVALID COMMAND · проверь формат", "error");
+        return result("INVALID COMMAND · check the format", "error");
       }
 
       function execute(raw, shouldRender = true) {
@@ -793,7 +793,7 @@
         const rows = [...state.db.entries()].sort(([a], [b]) => a.localeCompare(b));
         memoryBody.innerHTML = rows.length
           ? rows.map(([key, value]) => `<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(value)}</td></tr>`).join("")
-          : '<tr><td class="empty-row" colspan="2">empty · попробуй SET A 10</td></tr>';
+          : '<tr><td class="empty-row" colspan="2">empty · try SET A 10</td></tr>';
       }
 
       function renderStack() {
@@ -823,7 +823,7 @@
         state.db.clear();
         state.counts.clear();
         state.transactions = [];
-        state.log = [{ command: "WELCOME", output: "SET, GET, BEGIN… введи команду или нажми Demo", tone: "info" }];
+        state.log = [{ command: "WELCOME", output: "SET, GET, BEGIN… enter a command or press Demo", tone: "info" }];
         state.lastAction = "ready";
         render();
         input.focus();

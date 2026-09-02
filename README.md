@@ -1,30 +1,30 @@
 # 🧠 GhostDB
 
-> Маленькая in-memory база данных, в которой главное — увидеть, как работают транзакции.
+> A tiny in-memory database built to make transactions visible.
 
-GhostDB — учебный CLI-проект на Python с SQL-подобными командами `SET`, `GET`, `FIND`, `COUNTS` и поддержкой вложенных транзакций. Данные живут только в памяти процесса: запустил сессию — поэкспериментировал — завершил.
+GhostDB is an educational Python CLI project with SQL-like commands such as `SET`, `GET`, `FIND`, and `COUNTS`, plus support for nested transactions. Data lives only in the process memory: start a session, experiment, and exit.
 
 <p align="center">
-  <a href="./docs/"><strong>▶ Открыть интерактивный Playground</strong></a>
+  <a href="./docs/"><strong>▶ Open the interactive Playground</strong></a>
   ·
-  <a href="https://github.com/GLec1er/GhostDB">Репозиторий на GitHub</a>
+  <a href="https://github.com/GLec1er/GhostDB">View the GitHub repository</a>
 </p>
 
 <p align="center">
-  <img src="docs/ghostdb-flow.svg" alt="Схема работы GhostDB: команда, память и транзакционный слой" width="860">
+  <img src="docs/ghostdb-flow.svg" alt="GhostDB flow: command, memory, and transaction layers" width="860">
 </p>
 
-## Что здесь интересного
+## What makes it interesting
 
-| Возможность | Что демонстрирует |
+| Capability | What it demonstrates |
 | --- | --- |
-| `SET / GET / UNSET` | Базовый CRUD для ключей и значений |
-| `FIND / COUNTS` | Поиск ключей по значению и подсчёт повторов |
-| `BEGIN / ROLLBACK / COMMIT` | Изоляцию изменений и откат состояния |
-| Вложенные транзакции | Объединение дочернего слоя с родительским |
-| `--script` и `--debug` | Воспроизводимые сценарии и прозрачность внутренних операций |
+| `SET / GET / UNSET` | Basic key-value operations |
+| `FIND / COUNTS` | Finding keys by value and counting matches |
+| `BEGIN / ROLLBACK / COMMIT` | Isolated changes and state recovery |
+| Nested transactions | Merging a child layer into its parent |
+| `--script` and `--debug` | Reproducible scenarios and visible internal operations |
 
-## Быстрый старт
+## Quick start
 
 ```bash
 git clone https://github.com/GLec1er/GhostDB.git
@@ -32,7 +32,7 @@ cd GhostDB
 python cli.py --interactive
 ```
 
-Попробуй этот сценарий прямо в CLI:
+Try this scenario in the CLI:
 
 ```text
 SET mode demo
@@ -44,82 +44,82 @@ GET mode
 END
 ```
 
-Ожидаемый результат для двух `GET`:
+Expected output from the two `GET` commands:
 
 ```text
 transaction
 demo
 ```
 
-Для запуска готового сценария из файла:
+Run the included script file with:
 
 ```bash
 python cli.py --script tests.txt
 python cli.py --script tests.txt --debug
 ```
 
-## Команды
+## Commands
 
-| Команда | Формат | Результат |
+| Command | Format | Result |
 | --- | --- | --- |
-| `SET` | `SET <key> <value>` | Сохраняет значение |
-| `GET` | `GET <key>` | Возвращает значение или `NULL` |
-| `UNSET` | `UNSET <key>` | Удаляет ключ |
-| `COUNTS` | `COUNTS <value>` | Показывает количество ключей с таким значением |
-| `FIND` | `FIND <value>` | Показывает ключи с таким значением |
-| `BEGIN` | `BEGIN` | Открывает транзакционный слой |
-| `ROLLBACK` | `ROLLBACK` | Отменяет изменения текущего слоя |
-| `COMMIT` | `COMMIT` | Применяет слой или объединяет его с родительским |
-| `END` | `END` | Завершает интерактивную сессию |
+| `SET` | `SET <key> <value>` | Stores a value |
+| `GET` | `GET <key>` | Returns a value or `NULL` |
+| `UNSET` | `UNSET <key>` | Removes a key |
+| `COUNTS` | `COUNTS <value>` | Counts keys with a matching value |
+| `FIND` | `FIND <value>` | Lists keys with a matching value |
+| `BEGIN` | `BEGIN` | Opens a transaction layer |
+| `ROLLBACK` | `ROLLBACK` | Reverts the current layer |
+| `COMMIT` | `COMMIT` | Applies a layer or merges it into its parent |
+| `END` | `END` | Ends the interactive session |
 
-### Как устроен откат
+### How rollback works
 
-GhostDB сохраняет исходное состояние ключа в активном транзакционном слое только при первом изменении. Поэтому последовательность читается как история слоёв:
+GhostDB stores the original value of a key in the active transaction layer the first time that key changes. The sequence can therefore be read as a history of layers:
 
 ```text
-BEGIN          открыть слой T1
-SET A 10       записать прежнее значение A в T1
-BEGIN          открыть вложенный слой T2
-SET A 20       записать прежнее значение A в T2
-ROLLBACK       вернуть A к 10, закрыть T2
-COMMIT         подтвердить T1
+BEGIN          open layer T1
+SET A 10       save A's previous value in T1
+BEGIN          open nested layer T2
+SET A 20       save A's previous value in T2
+ROLLBACK       restore A to 10 and close T2
+COMMIT         confirm T1
 ```
 
-## Интерактивная документация
+## Interactive documentation
 
-В [GhostDB Playground](./docs/) можно:
+In the [GhostDB Playground](./docs/) you can:
 
-- вводить команды и сразу видеть результат;
-- наблюдать таблицу ключей, счётчики значений и стек транзакций;
-- загружать демонстрационный сценарий;
-- изучать архитектуру проекта без установки Python.
+- enter commands and see the result immediately;
+- watch the key table, value counters, and transaction stack;
+- load a demo scenario;
+- explore the project architecture without installing Python.
 
-Это самостоятельная браузерная визуализация поведения CLI. Исходная реализация базы остаётся в [`cli.py`](./cli.py).
+This is a standalone browser visualization of the CLI behavior. The source implementation remains in [`cli.py`](./cli.py).
 
-### Включить GitHub Pages
+### Enable GitHub Pages
 
-В настройках репозитория открой `Settings → Pages`, выбери `Deploy from a branch`, ветку `main` и папку `/docs`, затем нажми `Save`. После публикации страница будет доступна по адресу `https://glec1er.github.io/GhostDB/`.
+In the repository settings, open `Settings → Pages`, choose `Deploy from a branch`, select the `main` branch and `/docs` folder, then click `Save`. Once published, the page will be available at `https://glec1er.github.io/GhostDB/`.
 
-## Проверка
+## Checks
 
 ```bash
 python -m pytest -q
 ```
 
-## Структура
+## Project structure
 
 ```text
 .
-├── cli.py              # CLI и реализация GhostDB
-├── main.py             # минимальный вариант запуска
-├── tests/test_cli.py   # проверка сценария CLI
-├── tests.txt           # команды для воспроизводимого прогона
-├── output.txt          # ожидаемый вывод
-└── docs/               # интерактивная GitHub Pages-витрина
+├── cli.py              # CLI and GhostDB implementation
+├── main.py             # minimal runner
+├── tests/test_cli.py   # CLI scenario test
+├── tests.txt           # reproducible command script
+├── output.txt          # expected output
+└── docs/               # interactive GitHub Pages showcase
     ├── index.html
     └── ghostdb-flow.svg
 ```
 
-## Автор
+## Author
 
-**[GLec1er](https://github.com/GLec1er)** · сделано с душой ❤️
+**[GLec1er](https://github.com/GLec1er)** · built with soul ❤️
