@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="GhostDB — интерактивная документация и playground для in-memory базы данных на Python.">
+  <title>GhostDB · Interactive docs</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090d19;
+      --bg-soft: #0e1425;
+      --panel: rgba(19, 26, 48, .82);
+      --panel-solid: #141b32;
+      --panel-bright: #192242;
+      --line: rgba(151, 157, 216, .18);
+      --line-strong: rgba(167, 139, 250, .5);
+      --text: #f7f6ff;
+      --muted: #9a98b9;
+      --subtle: #6d6b8b;
+      --violet: #a78bfa;
+      --violet-strong: #7562ff;
+      --mint: #6ee7c7;
+      --mint-strong: #20bd99;
+      --coral: #ff9b9b;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .34);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 84% 2%, rgba(117, 98, 255, .18), transparent 25rem),
+        radial-gradient(circle at 8% 40%, rgba(32, 189, 153, .08), transparent 22rem),
+        var(--bg);
+      font-family: var(--sans);
+      line-height: 1.5;
+    }
+
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      background-image: linear-gradient(rgba(167, 139, 250, .025) 1px, transparent 1px), linear-gradient(90deg, rgba(167, 139, 250, .025) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent 75%);
+      content: "";
+      pointer-events: none;
+    }
+
+    a { color: inherit; }
+
+    button, input { font: inherit; }
+
+    button { cursor: pointer; }
+
+    .shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 78px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 760;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border: 1px solid rgba(167, 139, 250, .5);
+      border-radius: 10px;
+      color: var(--violet);
+      background: linear-gradient(145deg, rgba(117, 98, 255, .24), rgba(32, 189, 153, .12));
+      box-shadow: 0 0 26px rgba(117, 98, 255, .2);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    nav { display: flex; align-items: center; gap: 22px; }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color .2s ease;
+    }
+
+    nav a:hover, nav a:focus-visible { color: var(--text); }
+
+    .github-link {
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+      gap: 70px;
+      align-items: center;
+      padding: 96px 0 76px;
+    }
+
+    .eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid rgba(110, 231, 199, .3);
+      border-radius: 999px;
+      color: var(--mint);
+      background: rgba(110, 231, 199, .07);
+    }
+
+    .eyebrow-live::before {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 0 5px rgba(110, 231, 199, .1), 0 0 15px var(--mint);
+      content: "";
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 720px;
+      margin-bottom: 22px;
+      font-size: clamp(48px, 7vw, 82px);
+      line-height: .98;
+      letter-spacing: -.075em;
+    }
+
+    h1 span {
+      color: var(--violet);
+      text-shadow: 0 0 36px rgba(167, 139, 250, .22);
+    }
+
+    .hero-copy {
+      max-width: 570px;
+      margin-bottom: 30px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+    }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 11px; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 0 17px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      color: #0a0d18;
+      background: var(--violet);
+      box-shadow: 0 12px 28px rgba(117, 98, 255, .2);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 750;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .button:hover, .button:focus-visible {
+      background: #b5a0ff;
+      box-shadow: 0 16px 34px rgba(117, 98, 255, .3);
+      transform: translateY(-2px);
+    }
+
+    .button-secondary {
+      border-color: var(--line);
+      color: var(--text);
+      background: rgba(255, 255, 255, .045);
+      box-shadow: none;
+    }
+
+    .button-secondary:hover, .button-secondary:focus-visible { background: rgba(255, 255, 255, .08); }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 580px;
+      margin-top: 40px;
+    }
+
+    .metric {
+      padding-left: 13px;
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .metric strong { display: block; font-size: 20px; letter-spacing: -.04em; }
+    .metric span { color: var(--subtle); font-size: 11px; }
+
+    .hero-visual {
+      position: relative;
+      min-height: 430px;
+      padding: 28px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(25, 34, 66, .86), rgba(13, 18, 35, .92));
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .hero-visual::before {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(167, 139, 250, .06), transparent 65%);
+      content: "";
+      pointer-events: none;
+    }
+
+    .visual-head { display: flex; justify-content: space-between; color: var(--muted); font-family: var(--mono); font-size: 11px; }
+
+    .window-dots { display: flex; gap: 6px; }
+    .window-dots i { width: 7px; height: 7px; border-radius: 50%; background: #ff8b8b; }
+    .window-dots i:nth-child(2) { background: #f7c76b; }
+    .window-dots i:nth-child(3) { background: #6ee7c7; }
+
+    .visual-canvas { position: relative; height: 340px; margin-top: 22px; }
+
+    .orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 250px;
+      height: 250px;
+      border: 1px dashed rgba(167, 139, 250, .3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-14deg);
+    }
+
+    .orbit::after {
+      position: absolute;
+      inset: 23px;
+      border: 1px dashed rgba(110, 231, 199, .24);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: grid;
+      width: 112px;
+      height: 112px;
+      place-items: center;
+      border: 1px solid rgba(167, 139, 250, .58);
+      border-radius: 50%;
+      color: var(--text);
+      background: radial-gradient(circle at 35% 25%, #312a65, #171b38 68%);
+      box-shadow: 0 0 0 12px rgba(117, 98, 255, .07), 0 0 50px rgba(117, 98, 255, .25);
+      font-family: var(--mono);
+      font-size: 12px;
+      transform: translate(-50%, -50%);
+    }
+
+    .core b { color: var(--violet); font-size: 21px; }
+
+    .float-card {
+      position: absolute;
+      display: grid;
+      gap: 3px;
+      min-width: 132px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(14, 20, 37, .92);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, .22);
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .float-card strong { color: var(--text); font-family: var(--sans); font-size: 12px; }
+    .float-card span { color: var(--mint); }
+    .float-card.one { top: 32px; left: 0; animation: hover-one 5s ease-in-out infinite; }
+    .float-card.two { right: 0; bottom: 45px; animation: hover-two 5.5s ease-in-out infinite; }
+    .float-card.three { bottom: 9px; left: 50%; color: var(--violet); transform: translateX(-50%); }
+
+    .signal { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 18px var(--mint); }
+    .signal.one { top: 22%; right: 22%; }
+    .signal.two { bottom: 24%; left: 22%; background: var(--violet); box-shadow: 0 0 18px var(--violet); }
+
+    @keyframes hover-one { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes hover-two { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
+
+    .section { padding: 44px 0 84px; }
+
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+    .section-heading h2 { margin-bottom: 0; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.06em; }
+    .section-heading p { max-width: 450px; margin-bottom: 3px; color: var(--muted); font-size: 14px; }
+
+    .playground-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(290px, .65fr); gap: 16px; }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--panel);
+      box-shadow: 0 20px 55px rgba(0, 0, 0, .2);
+      backdrop-filter: blur(14px);
+    }
+
+    .terminal-card { min-width: 0; overflow: hidden; }
+    .card-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 17px; border-bottom: 1px solid var(--line); }
+    .card-title { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; }
+    .card-title::before { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); content: ""; }
+    .card-label { color: var(--subtle); font-family: var(--mono); font-size: 10px; }
+
+    .terminal-output {
+      height: 315px;
+      padding: 19px;
+      overflow: auto;
+      background: #0a0f1d;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .terminal-output::-webkit-scrollbar { width: 7px; }
+    .terminal-output::-webkit-scrollbar-thumb { border-radius: 9px; background: #2c3152; }
+    .term-entry { margin-bottom: 12px; }
+    .term-command { color: var(--text); }
+    .term-command .prompt { color: var(--violet); }
+    .term-output { padding-left: 18px; color: var(--mint); white-space: pre-wrap; }
+    .term-output.info { color: var(--muted); }
+    .term-output.error { color: var(--coral); }
+
+    .command-form { display: flex; align-items: center; gap: 9px; padding: 13px 17px; border-top: 1px solid var(--line); background: var(--panel-solid); }
+    .prompt { color: var(--violet); font-family: var(--mono); font-size: 13px; }
+    .command-input { min-width: 0; flex: 1; border: 0; outline: 0; color: var(--text); background: transparent; font-family: var(--mono); font-size: 13px; }
+    .command-input::placeholder { color: #595878; }
+    .run-button { display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border: 1px solid rgba(167, 139, 250, .4); border-radius: 9px; color: var(--violet); background: rgba(167, 139, 250, .1); }
+    .run-button:hover, .run-button:focus-visible { color: var(--text); background: rgba(167, 139, 250, .2); }
+
+    .quick-bar { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 17px 15px; background: var(--panel-solid); }
+    .quick-command { padding: 6px 9px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: transparent; font-family: var(--mono); font-size: 10px; transition: border-color .2s, color .2s, background .2s; }
+    .quick-command:hover, .quick-command:focus-visible { border-color: var(--line-strong); color: var(--text); background: rgba(167, 139, 250, .08); }
+
+    .state-card { min-width: 0; }
+    .state-body { padding: 16px; }
+    .state-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+    .state-stat { padding: 11px 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, .025); }
+    .state-stat strong { display: block; color: var(--text); font-size: 19px; letter-spacing: -.05em; }
+    .state-stat span { color: var(--subtle); font-size: 10px; }
+
+    .mini-heading { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 9px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .mini-heading span { color: var(--subtle); font-family: var(--mono); font-size: 10px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+    .memory-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; }
+    .memory-table th { padding: 0 0 8px; color: var(--subtle); font-size: 9px; font-weight: 500; text-align: left; text-transform: uppercase; }
+    .memory-table td { padding: 8px 0; border-top: 1px solid rgba(151, 157, 216, .1); color: var(--mint); }
+    .memory-table td:last-child { color: var(--text); text-align: right; }
+    .empty-row { color: var(--subtle) !important; text-align: left !important; }
+
+    .stack-list { display: grid; gap: 7px; }
+    .stack-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); background: rgba(117, 98, 255, .05); font-family: var(--mono); font-size: 11px; }
+    .stack-item.active { border-color: rgba(110, 231, 199, .38); color: var(--mint); background: rgba(110, 231, 199, .07); }
+    .stack-empty { padding: 10px; border: 1px dashed var(--line); border-radius: 10px; color: var(--subtle); font-family: var(--mono); font-size: 11px; text-align: center; }
+
+    .state-actions { display: flex; gap: 8px; margin-top: 18px; }
+    .small-button { flex: 1; min-height: 35px; padding: 0 8px; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); background: transparent; font-size: 11px; }
+    .small-button:hover, .small-button:focus-visible { border-color: var(--line-strong); color: var(--text); background: rgba(255, 255, 255, .04); }
+
+    .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
+    .feature-card { min-height: 160px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(150deg, rgba(25, 34, 66, .66), rgba(15, 20, 38, .66)); }
+    .feature-icon { display: grid; width: 30px; height: 30px; margin-bottom: 18px; place-items: center; border: 1px solid var(--line-strong); border-radius: 9px; color: var(--violet); font-family: var(--mono); font-size: 11px; }
+    .feature-card:nth-child(2) .feature-icon { border-color: rgba(110, 231, 199, .38); color: var(--mint); }
+    .feature-card:nth-child(3) .feature-icon { border-color: rgba(255, 155, 155, .35); color: var(--coral); }
+    .feature-card h3 { margin-bottom: 7px; font-size: 14px; letter-spacing: -.02em; }
+    .feature-card p { margin-bottom: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+    .architecture { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+    .architecture-copy { padding: 28px; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(19, 26, 48, .64); }
+    .architecture-copy h2 { margin-bottom: 12px; font-size: 30px; letter-spacing: -.06em; }
+    .architecture-copy p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .architecture-copy code { padding: 3px 6px; border-radius: 6px; color: var(--mint); background: rgba(110, 231, 199, .09); font-family: var(--mono); font-size: .9em; }
+    .steps { display: grid; gap: 10px; margin-top: 24px; }
+    .step { display: grid; grid-template-columns: 30px 1fr; gap: 11px; align-items: start; }
+    .step-number { display: grid; width: 26px; height: 26px; place-items: center; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--violet); font-family: var(--mono); font-size: 11px; }
+    .step strong { display: block; margin-bottom: 2px; font-size: 12px; }
+    .step span { color: var(--muted); font-size: 12px; }
+
+    .code-map { display: grid; align-content: center; gap: 10px; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius-md); background: #0a0f1d; font-family: var(--mono); }
+    .code-line { display: flex; gap: 13px; color: var(--muted); font-size: 12px; }
+    .line-no { width: 22px; color: #484768; text-align: right; user-select: none; }
+    .syntax-violet { color: var(--violet); }
+    .syntax-mint { color: var(--mint); }
+    .syntax-coral { color: var(--coral); }
+    .syntax-dim { color: #6c6a8c; }
+
+    footer { display: flex; justify-content: space-between; gap: 20px; padding: 25px 0 40px; border-top: 1px solid var(--line); color: var(--subtle); font-size: 12px; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    :focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+
+    @media (max-width: 930px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; padding-top: 70px; }
+      .hero-visual { min-height: 390px; }
+      .playground-grid, .architecture { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .shell { width: min(100% - 28px, 1180px); }
+      .topbar { min-height: 68px; }
+      nav a:not(.github-link) { display: none; }
+      .hero { padding: 58px 0 48px; }
+      h1 { font-size: 54px; }
+      .hero-copy { font-size: 16px; }
+      .metric-row { gap: 9px; }
+      .metric strong { font-size: 17px; }
+      .hero-visual { min-height: 360px; padding: 20px; }
+      .visual-canvas { height: 285px; }
+      .orbit { width: 190px; height: 190px; }
+      .core { width: 88px; height: 88px; font-size: 10px; }
+      .core b { font-size: 17px; }
+      .float-card { min-width: 112px; padding: 9px 10px; font-size: 9px; }
+      .float-card.one { top: 17px; }
+      .float-card.two { bottom: 33px; }
+      .float-card.three { bottom: 0; }
+      .section { padding: 34px 0 58px; }
+      .section-heading { display: block; }
+      .section-heading h2 { margin-bottom: 8px; }
+      .state-stats { gap: 5px; }
+      .state-stat { padding: 9px 7px; }
+      .state-stat strong { font-size: 16px; }
+      .state-stat span { font-size: 9px; }
+      .feature-grid { grid-template-columns: 1fr 1fr; }
+      .feature-card { min-height: 175px; padding: 14px; }
+      .architecture-copy, .code-map { padding: 20px; }
+      footer { display: block; }
+      footer span { display: block; margin-top: 7px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="../README.md" aria-label="GhostDB README">
+        <span class="brand-mark">G</span>
+        <span>GhostDB <span style="color: var(--subtle);">/ docs</span></span>
+      </a>
+      <nav aria-label="Основная навигация">
+        <a href="#playground">Playground</a>
+        <a href="#commands">Команды</a>
+        <a href="#architecture">Архитектура</a>
+        <a class="github-link" href="https://github.com/GLec1er/GhostDB">GitHub ↗</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="overview">
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-live">live documentation</span>
+            <span>Python · zero dependencies</span>
+          </div>
+          <h1>Database you can <span>touch.</span></h1>
+          <p class="hero-copy">GhostDB превращает транзакции в понятный эксперимент: вводи команды, меняй состояние памяти и наблюдай, что именно делает <code>COMMIT</code> или <code>ROLLBACK</code>.</p>
+          <div class="actions">
+            <a class="button" href="#playground">Запустить Playground <span aria-hidden="true">↓</span></a>
+            <a class="button button-secondary" href="../README.md">Читать README <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="metric-row" aria-label="Ключевые свойства">
+            <div class="metric"><strong>0 files</strong><span>только RAM</span></div>
+            <div class="metric"><strong>∞ layers</strong><span>вложенные транзакции</span></div>
+            <div class="metric"><strong>9 cmds</strong><span>маленький API</span></div>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Схема GhostDB">
+          <div class="visual-head"><span>ghostdb / runtime</span><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <div class="visual-canvas">
+            <div class="orbit"></div>
+            <div class="core"><span><b>DB</b><br>in memory</span></div>
+            <div class="float-card one"><strong>command</strong><span>SET A 10</span><small>process()</small></div>
+            <div class="float-card two"><strong>transaction</strong><span>T2 · active</span><small>snapshot: A</small></div>
+            <div class="float-card three"><strong>state</strong><span>db = { A: 10 }</span></div>
+            <i class="signal one"></i><i class="signal two"></i>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="playground">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow" style="margin-bottom: 10px;">01 · interactive lab</div>
+            <h2>Потрогай состояние</h2>
+          </div>
+          <p>Это браузерное зеркало команд из `cli.py`: консоль, память, счётчики и стек обновляются одновременно.</p>
+        </div>
+
+        <div class="playground-grid">
+          <div class="card terminal-card">
+            <div class="card-bar">
+              <div class="card-title">GhostDB Playground</div>
+              <span class="card-label">client-side emulator</span>
+            </div>
+            <div class="terminal-output" id="terminalOutput" role="log" aria-live="polite" aria-label="Вывод Playground"></div>
+            <form class="command-form" id="commandForm">
+              <span class="prompt" aria-hidden="true">ghostdb&gt;</span>
+              <input class="command-input" id="commandInput" autocomplete="off" spellcheck="false" aria-label="Команда GhostDB" placeholder="например: BEGIN">
+              <button class="run-button" type="submit" aria-label="Выполнить команду">↵</button>
+            </form>
+            <div class="quick-bar" aria-label="Быстрые команды">
+              <button class="quick-command" type="button" data-command="SET A 10">SET A 10</button>
+              <button class="quick-command" type="button" data-command="BEGIN">BEGIN</button>
+              <button class="quick-command" type="button" data-command="SET A 20">SET A 20</button>
+              <button class="quick-command" type="button" data-command="ROLLBACK">ROLLBACK</button>
+              <button class="quick-command" type="button" data-command="GET A">GET A</button>
+            </div>
+          </div>
+
+          <aside class="card state-card" aria-label="Текущее состояние базы">
+            <div class="card-bar">
+              <div class="card-title">Live state</div>
+              <span class="card-label" id="lastAction">ready</span>
+            </div>
+            <div class="state-body">
+              <div class="state-stats">
+                <div class="state-stat"><strong id="keysCount">0</strong><span>keys</span></div>
+                <div class="state-stat"><strong id="valuesCount">0</strong><span>values</span></div>
+                <div class="state-stat"><strong id="txCount">0</strong><span>layers</span></div>
+              </div>
+
+              <div class="mini-heading">Memory <span>db</span></div>
+              <table class="memory-table">
+                <thead><tr><th>key</th><th>value</th></tr></thead>
+                <tbody id="memoryBody"></tbody>
+              </table>
+
+              <div class="mini-heading">Transactions <span>stack</span></div>
+              <div class="stack-list" id="stackList"></div>
+
+              <div class="state-actions">
+                <button class="small-button" id="demoButton" type="button">▶ Demo</button>
+                <button class="small-button" id="resetButton" type="button">↺ Reset</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="commands">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow" style="margin-bottom: 10px;">02 · small surface area</div>
+            <h2>Команды без шума</h2>
+          </div>
+          <p>Одна команда — одна идея. Можно читать реализацию и сразу проверять её поведение в лаборатории выше.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card"><div class="feature-icon">KV</div><h3>SET / GET</h3><p>Положи значение в RAM и получи его по ключу. Отсутствующий ключ возвращает <code>NULL</code>.</p></article>
+          <article class="feature-card"><div class="feature-icon">∑</div><h3>FIND / COUNTS</h3><p>Найди все ключи со значением или посчитай, сколько раз оно встречается.</p></article>
+          <article class="feature-card"><div class="feature-icon">↶</div><h3>ROLLBACK</h3><p>Верни активный слой к snapshot-состоянию, не затрагивая родительскую транзакцию.</p></article>
+          <article class="feature-card"><div class="feature-icon">↗</div><h3>COMMIT</h3><p>Подтверди слой или передай его исходные значения на уровень выше.</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="architecture">
+        <div class="architecture">
+          <div class="architecture-copy">
+            <div class="eyebrow" style="margin-bottom: 10px;">03 · under the hood</div>
+            <h2>Снимок при первом изменении</h2>
+            <p>Когда транзакция меняет ключ впервые, GhostDB сохраняет его прежнее значение в текущем слое. Дальше <code>ROLLBACK</code> восстанавливает снимок, а <code>COMMIT</code> переносит историю во внешний слой.</p>
+            <div class="steps">
+              <div class="step"><span class="step-number">01</span><div><strong>BEGIN</strong><span>Добавляет новый пустой слой.</span></div></div>
+              <div class="step"><span class="step-number">02</span><div><strong>SET / UNSET</strong><span>Сохраняет старое значение ключа один раз.</span></div></div>
+              <div class="step"><span class="step-number">03</span><div><strong>COMMIT / ROLLBACK</strong><span>Применяет изменения или собирает состояние назад.</span></div></div>
+            </div>
+          </div>
+          <div class="code-map" aria-label="Фрагмент модели транзакций">
+            <div class="code-line"><span class="line-no">01</span><span><span class="syntax-violet">transactions</span> = []</span></div>
+            <div class="code-line"><span class="line-no">02</span><span><span class="syntax-violet">BEGIN</span> → <span class="syntax-mint">T1</span></span></div>
+            <div class="code-line"><span class="line-no">03</span><span><span class="syntax-violet">SET</span> A 10</span></div>
+            <div class="code-line"><span class="line-no">04</span><span class="syntax-violet">BEGIN</span> → <span class="syntax-mint">T2</span></div>
+            <div class="code-line"><span class="line-no">05</span><span><span class="syntax-violet">SET</span> A 20 <span class="syntax-dim"># snapshot A=10</span></span></div>
+            <div class="code-line"><span class="line-no">06</span><span><span class="syntax-coral">ROLLBACK</span> <span class="syntax-dim"># A ← 10</span></span></div>
+            <div class="code-line"><span class="line-no">07</span><span><span class="syntax-mint">COMMIT</span> <span class="syntax-dim"># T1 applied</span></span></div>
+            <div class="code-line"><span class="line-no">08</span><span><span class="syntax-dim">// nothing persisted to disk</span></span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>GhostDB · built for curious minds</span>
+      <span><a href="../README.md">README</a> · <a href="https://github.com/GLec1er/GhostDB">GitHub ↗</a></span>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const state = {
+        db: new Map(),
+        counts: new Map(),
+        transactions: [],
+        log: [],
+        lastAction: "ready"
+      };
+
+      const terminal = document.querySelector("#terminalOutput");
+      const input = document.querySelector("#commandInput");
+      const commandForm = document.querySelector("#commandForm");
+      const memoryBody = document.querySelector("#memoryBody");
+      const stackList = document.querySelector("#stackList");
+      const keysCount = document.querySelector("#keysCount");
+      const valuesCount = document.querySelector("#valuesCount");
+      const txCount = document.querySelector("#txCount");
+      const lastAction = document.querySelector("#lastAction");
+
+      const demoCommands = [
+        "SET A 10",
+        "SET B 10",
+        "BEGIN",
+        "SET A 20",
+        "BEGIN",
+        "SET A 30",
+        "GET A",
+        "ROLLBACK",
+        "GET A",
+        "COMMIT",
+        "GET A"
+      ];
+
+      function snapshot(key) {
+        return { exists: state.db.has(key), value: state.db.get(key) };
+      }
+
+      function remember(key) {
+        const layer = state.transactions[state.transactions.length - 1];
+        if (layer && !layer.has(key)) layer.set(key, snapshot(key));
+      }
+
+      function rawSet(key, value) {
+        state.db.set(key, value);
+        rebuildCounts();
+      }
+
+      function rawUnset(key) {
+        state.db.delete(key);
+        rebuildCounts();
+      }
+
+      function rebuildCounts() {
+        state.counts = new Map();
+        for (const value of state.db.values()) {
+          state.counts.set(value, (state.counts.get(value) || 0) + 1);
+        }
+      }
+
+      function restore(layer) {
+        for (const [key, previous] of layer) {
+          if (previous.exists) rawSet(key, previous.value);
+          else rawUnset(key);
+        }
+      }
+
+      function result(output, tone = "") {
+        return { output, tone };
+      }
+
+      function processCommand(raw) {
+        const line = raw.trim();
+        if (!line) return null;
+        const parts = line.split(/\s+/);
+        const cmd = parts[0].toUpperCase();
+        const key = parts[1];
+        const value = parts[2];
+
+        if (cmd === "SET" && parts.length === 3) {
+          remember(key);
+          rawSet(key, value);
+          return result(`OK · ${key} = ${value}`);
+        }
+        if (cmd === "GET" && parts.length === 2) {
+          return result(state.db.has(key) ? state.db.get(key) : "NULL");
+        }
+        if (cmd === "UNSET" && parts.length === 2) {
+          remember(key);
+          rawUnset(key);
+          return result(`OK · ${key} removed`);
+        }
+        if (cmd === "COUNTS" && parts.length === 2) {
+          return result(String(state.counts.get(key) || 0));
+        }
+        if (cmd === "FIND" && parts.length === 2) {
+          const found = [...state.db].filter(([, item]) => item === key).map(([itemKey]) => itemKey);
+          return result(found.length ? found.join(" ") : "NULL");
+        }
+        if (cmd === "BEGIN" && parts.length === 1) {
+          state.transactions.push(new Map());
+          return result(`OPEN · T${state.transactions.length}`);
+        }
+        if (cmd === "ROLLBACK" && parts.length === 1) {
+          if (!state.transactions.length) return result("NO TRANSACTION", "error");
+          restore(state.transactions.pop());
+          return result(`ROLLBACK · ${state.transactions.length ? `T${state.transactions.length} remains` : "clean state"}`);
+        }
+        if (cmd === "COMMIT" && parts.length === 1) {
+          if (!state.transactions.length) return result("NO TRANSACTION", "error");
+          const current = state.transactions.pop();
+          const parent = state.transactions[state.transactions.length - 1];
+          if (parent) {
+            for (const [changedKey, previous] of current) {
+              if (!parent.has(changedKey)) parent.set(changedKey, previous);
+            }
+          }
+          return result(`COMMIT · ${state.transactions.length ? `merged into T${state.transactions.length}` : "applied"}`);
+        }
+        if (cmd === "END" && parts.length === 1) {
+          return result("SESSION READY · browser lab stays open", "info");
+        }
+        return result("INVALID COMMAND · проверь формат", "error");
+      }
+
+      function execute(raw, shouldRender = true) {
+        const command = raw.trim();
+        const response = processCommand(command);
+        if (!response) return;
+        state.lastAction = command.toUpperCase();
+        state.log.push({ command, ...response });
+        if (state.log.length > 30) state.log.shift();
+        if (shouldRender) render();
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;"
+        }[character]));
+      }
+
+      function renderTerminal() {
+        terminal.innerHTML = state.log.map((entry) => `
+          <div class="term-entry">
+            <div class="term-command"><span class="prompt">ghostdb&gt;</span> ${escapeHtml(entry.command)}</div>
+            <div class="term-output ${entry.tone}">${escapeHtml(entry.output)}</div>
+          </div>
+        `).join("");
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+
+      function renderMemory() {
+        const rows = [...state.db.entries()].sort(([a], [b]) => a.localeCompare(b));
+        memoryBody.innerHTML = rows.length
+          ? rows.map(([key, value]) => `<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(value)}</td></tr>`).join("")
+          : '<tr><td class="empty-row" colspan="2">empty · попробуй SET A 10</td></tr>';
+      }
+
+      function renderStack() {
+        if (!state.transactions.length) {
+          stackList.innerHTML = '<div class="stack-empty">no open transactions</div>';
+          return;
+        }
+        stackList.innerHTML = state.transactions.map((layer, index) => `
+          <div class="stack-item ${index === state.transactions.length - 1 ? "active" : ""}">
+            <span>T${index + 1} · ${index === state.transactions.length - 1 ? "active" : "parent"}</span>
+            <span>${layer.size} snapshot${layer.size === 1 ? "" : "s"}</span>
+          </div>
+        `).reverse().join("");
+      }
+
+      function render() {
+        renderTerminal();
+        renderMemory();
+        renderStack();
+        keysCount.textContent = state.db.size;
+        valuesCount.textContent = state.counts.size;
+        txCount.textContent = state.transactions.length;
+        lastAction.textContent = state.lastAction;
+      }
+
+      function reset() {
+        state.db.clear();
+        state.counts.clear();
+        state.transactions = [];
+        state.log = [{ command: "WELCOME", output: "SET, GET, BEGIN… введи команду или нажми Demo", tone: "info" }];
+        state.lastAction = "ready";
+        render();
+        input.focus();
+      }
+
+      function runDemo() {
+        reset();
+        for (const command of demoCommands) execute(command, false);
+        render();
+        input.focus();
+      }
+
+      commandForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        execute(input.value);
+        input.value = "";
+        input.focus();
+      });
+
+      document.querySelectorAll("[data-command]").forEach((button) => {
+        button.addEventListener("click", () => execute(button.dataset.command));
+      });
+
+      document.querySelector("#demoButton").addEventListener("click", runDemo);
+      document.querySelector("#resetButton").addEventListener("click", reset);
+
+      reset();
+    })();
+  </script>
+</body>
+</html>
